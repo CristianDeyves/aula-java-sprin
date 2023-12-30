@@ -1,0 +1,41 @@
+version: '3'
+
+networks:
+  aprendendo-spring:
+    name: java-spring-network
+
+services:
+  postgres:
+    container_name: Aulas-Java-Spring-db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crud
+    volumes:
+      - ../crud-db:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - aprendendo-spring
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  pgadmin:
+    container_name: pgadmin-java-spring
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "java@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: '123456'
+    ports:
+      - 5051:80
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - aprendendo-spring
